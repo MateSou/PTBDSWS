@@ -1,4 +1,4 @@
-from flask import Flask 
+from flask import Flask, render_template 
 from flask import request, make_response,redirect,abort
 app = Flask(__name__)
 
@@ -6,19 +6,23 @@ app = Flask(__name__)
 ##hello world
 @app.route('/')
 def index():
-    return '<h1>Hello World!</h1> <h2>Disciplina PTBDSWS</h2>'
+    return render_template('homepage.html')
 
 
 ##Dinamico
-@app.route('/user/<name>')
-def user(name):
-    return '<h1>Ola, {}!</h1>'.format(name) 
+@app.route('/user/<name>/<pt>/<college>')
+def user(name,pt,college):
+    return render_template('identificacao.html', name=name,pt=pt,college=college) 
 
 ##Browser do usuario
 @app.route('/contextorequisicao')
 def browser():
     user_agent = request.headers.get('User-Agent')
-    return '<p>Seu navegador é {}</p>'.format(user_agent)
+    addr_client = request.remote_addr
+    host = request.host
+    return render_template('contexto_requisicao.html',
+                           user_agent=user_agent,addr_client=addr_client,
+                           host=host)
 
 ##Object response 
 @app.route('/objetoresposta')
@@ -39,10 +43,4 @@ def redir():
 
 @app.route('/abortar')
 def abortar():
-    abort (404)
-    
-
-    
-
-
-
+    abort (404)    
