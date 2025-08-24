@@ -1,24 +1,33 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Home</title>
-        <meta charset="utf-8" />
-    </head>
+    {% extends "base.html" %}
+    
+    {% block head %}
+        {{ super() }}
+    {% endblock %}
 
-    <body>
-        <h1>Avaliação Contínua: Aula 03</h1>
-        <ul>
-            <li>
-                <a href="">Home</a>
-            </li>
+    {% block navbar %}
+        {{ super() }}
+    {% endblock %}
 
-            <li>
-                <a href="/user/Mateus de Jesus/PT3031454/IFSP">Identificação</a>
-            </li>
+    {% block content %}
+        {{ super() }}
+    {% endblock %}
 
-            <li>
-                <a href="/contextorequisicao">Contexto da Requisição</a>
-            </li>
-        </ul>
-    </body>
+    {% block page_content %}
+            <h1>Hello World!</h1>
+        </div>
+    {% endblock %}
+
+    {% block scripts %}
+        {{ super() }}
+            <div class="container">
+                <p>The local date and time is {{ moment(current_time).format('LLL') }}.</p>
+                <p>That was {{ moment(current_time).fromNow(refresh=true) }}</p>
+            </div>
+        </div>
+    {% endblock %}
+
+    
+
 </html>
