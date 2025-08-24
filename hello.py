@@ -1,18 +1,23 @@
-from flask import Flask, render_template 
+from flask import Flask, render_template,url_for
 from flask import request, make_response,redirect,abort
-app = Flask(__name__)
+from flask_bootstrap import Bootstrap
+from flask_moment import Moment
+from datetime import datetime
 
+app = Flask(__name__)
+bootstrap = Bootstrap(app)
+moment = Moment(app)
 
 ##hello world
 @app.route('/')
 def index():
-    return render_template('homepage.html')
+    return render_template('homepage.html',current_time=datetime.utcnow())
 
 
 ##Dinamico
-@app.route('/user/<name>/<pt>/<college>')
-def user(name,pt,college):
-    return render_template('identificacao.html', name=name,pt=pt,college=college) 
+@app.route('/user/<name>')
+def user(name):
+    return render_template('user.html', name=name) 
 
 ##Browser do usuario
 @app.route('/contextorequisicao')
@@ -41,6 +46,12 @@ def cod():
 def redir():
     return redirect('https://ptb.ifsp.edu.br/')
 
+##Abortar
 @app.route('/abortar')
 def abortar():
     abort (404)    
+
+##Error 404 - Not Found
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404error.html'), 404
