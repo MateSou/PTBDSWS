@@ -10,13 +10,12 @@
         {{ super() }}
     {% endblock %}
 
-    {% block content %}
-        {{ super() }}
+    {% block page_content %}
+        <h1>Dados da última atualização:</h1>
     {% endblock %}
 
-    {% block page_content %}
-            <h1>Hello World!</h1>
-        </div>
+    {% block content %}
+        {{ super() }}
     {% endblock %}
 
     {% block scripts %}

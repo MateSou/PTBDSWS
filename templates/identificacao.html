@@ -1,19 +1,26 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Identificação</title>
-        <meta charset="utf-8" />
-    </head>
+    {% extends "base.html" %}
 
-    <body>
-        <h1>Avaliação Contínua: Aula 03</h1>
+    {% block title %}Identificação{% endblock %}
+    {% block head %}
+        {{ super() }}
+    {% endblock %}
+    
+    {% block navbar %}
+        {{ super() }}
+    {% endblock %}
 
-        <p><b>Aluno: </b>{{ name }}</p>
-        <p><b>Prontuário: </b>{{ pt }}</p>
-        <p><b>Instituição: </b>{{ college }}</p>
+    {% block page_content %}
+        <h1>Olá, {{ name }}!</h1>
+    {% endblock %}
 
-        <br>
+    {% block content %}
+        {{ super() }}
+        <div class="container">
+            <h1>Prontuário: {{ prontuario }}</h1>
+            <h1>Instituição: {{ instituicao }}</h1>
+        </div>
+    {% endblock %}
 
-        <a href="/">Voltar</a>
-    </body>
 </html>

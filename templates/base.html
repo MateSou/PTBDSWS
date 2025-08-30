@@ -3,8 +3,8 @@
 {% block title %}Flask{% endblock %}
 {% block head %}
     {{super()}}
-    <link rel="shortchut icon" href="{{ url_for('static', filename='Flask.ico') }}" type="image/x-icon">
-    <link rel="icon" href="{{ url_for('static', filename='Flask.ico') }}" type="image/x-icon">
+    <link rel="shortchut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 {% endblock %}
 
 {%block navbar %}
@@ -17,11 +17,19 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Flask</a>
+            <a class="navbar-brand" href="/">Avaliação Contínua: Aula 040</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/">Home</a></li>
+
+                <li><a href="{{ url_for('user', name='Mateus', 
+                    prontuario='PT3031454', 
+                    instituicao='IFSP')}}">Identificação</a> 
+                </li>
+                
+                <li><a href="{{ url_for('browser', name='Mateus')}}">
+                    Contexto da Requisição</a></li>
             </ul>
         </div>
     </div>
