@@ -1,27 +1,33 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Contexto-Requisicao</title>
-        <meta charset="utf-8" />
-    </head>
+    {% extends "base.html" %}
 
-    <body>
-        <h1>Avaliação Contínua: Aula 03</h1>
+    {% block title %}Contexto-Requisicao{% endblock %}
+    {% block head %}
+        {{ super() }}
+    {% endblock %}
 
-        <p>
-            <strong>Seu navegador é: </strong> {{ user_agent }}
-        </p>
+    {% block navbar %}
+        {{ super() }}
+    {% endblock %}
 
-        <p>
-            <strong>O ip do computador remoto é: </strong> {{ addr_client }}
-        </p>
+    {% block page_content %}
+        <h1>Olá, {{ name }}!</h1>
+    {% endblock %}
 
-        <p>
-            <strong>O host da aplicação é: </strong> {{ host }}
-        </p>
+    {% block content %}
+        {{ super() }}
+        <div class="container">
+            <h1>
+                Seu navegador é: {{ user_agent }}
+            </h1>
 
-        <br>
+            <h1>
+                O ip do computador remoto é:  {{ addr_client }}
+            </h1>
 
-        <a href="/">Voltar</a>
-    </body>
+            <h1>
+                O host da aplicação é:  {{ host }}
+            </h1>
+    {% endblock %}
 </html>

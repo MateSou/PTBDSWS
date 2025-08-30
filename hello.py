@@ -15,19 +15,20 @@ def index():
 
 
 ##Dinamico
-@app.route('/user/<name>')
-def user(name):
-    return render_template('user.html', name=name) 
+@app.route('/user/<name>/<prontuario>/<instituicao>')
+def user(name,prontuario,instituicao):
+    return render_template('identificacao.html', name=name,
+                           prontuario=prontuario, instituicao=instituicao)
 
 ##Browser do usuario
-@app.route('/contextorequisicao')
-def browser():
+@app.route('/contextorequisicao/<name>')
+def browser(name):
     user_agent = request.headers.get('User-Agent')
     addr_client = request.remote_addr
     host = request.host
     return render_template('contexto_requisicao.html',
                            user_agent=user_agent,addr_client=addr_client,
-                           host=host)
+                           host=host, name=name)
 
 ##Object response 
 @app.route('/objetoresposta')
