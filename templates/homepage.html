@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
     {% extends "base.html" %}
-    
+    {% import "bootstrap/wtf.html" as wtf %}
+
+    {% block title %}Home{% endblock %}
     {% block head %}
         {{ super() }}
     {% endblock %}
@@ -10,21 +12,20 @@
         {{ super() }}
     {% endblock %}
 
+
     {% block page_content %}
-        <h1>Dados da última atualização:</h1>
+        <h1>Hello, {% if name %}{{ name }}{% else %}Stranger{% endif %}!</h1>
     {% endblock %}
 
     {% block content %}
         {{ super() }}
+        <div class="container">
+            {{ wtf.quick_form(form) }}
+        </div>
     {% endblock %}
 
     {% block scripts %}
         {{ super() }}
-            <div class="container">
-                <p>The local date and time is {{ moment(current_time).format('LLL') }}.</p>
-                <p>That was {{ moment(current_time).fromNow(refresh=true) }}</p>
-            </div>
-        </div>
     {% endblock %}
 
     

@@ -1,56 +1,32 @@
-from flask import Flask, render_template,url_for
-from flask import request, make_response,redirect,abort
+from flask import Flask, render_template, url_for, session, redirect,flash
 from flask_bootstrap import Bootstrap
-from flask_moment import Moment
-from datetime import datetime
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
-moment = Moment(app)
+app.config['SECRET_KEY'] = 'senhasecreta'
+
+class NameForm(FlaskForm):
+    #Campo do formulario para inserir o nome. equivalente a 
+    # <input type='text'>
+    name = StringField('What is your name?', validators=[DataRequired()])
+    #Campo do formulario para enviar os dados. equivalente a 
+    # <input type='submit'>
+    submit = SubmitField('Submit')
 
 ##hello world
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('homepage.html',current_time=datetime.utcnow())
-
-
-##Dinamico
-@app.route('/user/<name>/<prontuario>/<instituicao>')
-def user(name,prontuario,instituicao):
-    return render_template('identificacao.html', name=name,
-                           prontuario=prontuario, instituicao=instituicao)
-
-##Browser do usuario
-@app.route('/contextorequisicao/<name>')
-def browser(name):
-    user_agent = request.headers.get('User-Agent')
-    addr_client = request.remote_addr
-    host = request.host
-    return render_template('contexto_requisicao.html',
-                           user_agent=user_agent,addr_client=addr_client,
-                           host=host, name=name)
-
-##Object response 
-@app.route('/objetoresposta')
-def objresp():
-    response = make_response('<h1>This document carries a cookie!</h1>')
-    response.set_cookie('answer', '42')
-    return response
-
-##bad request 
-@app.route ('/codigostatusdiferente')
-def cod():
-    return '<p>Bad request</p>', 400
-
-##redirecionamento
-@app.route ('/redirecionamento')
-def redir():
-    return redirect('https://ptb.ifsp.edu.br/')
-
-##Abortar
-@app.route('/abortar')
-def abortar():
-    abort (404)    
+    form = NameForm()
+    if form.validate_on_submit():
+        old_name = session.get('name')
+        if old_name is not None and old_name != form.name.data:
+            flash('Looks like you have changed your name!')
+        session['name'] = form.name.data
+        return redirect (url_for('index'))
+    return render_template('homepage.html',form=form,name = session.get('name'))
 
 ##Error 404 - Not Found
 @app.errorhandler(404)
