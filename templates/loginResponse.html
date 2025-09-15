@@ -1,42 +1,38 @@
 <!DOCTYPE html>
 <html>
     {% extends "base.html" %}
-    {% import "bootstrap/wtf.html" as wtf %}
-
-    {% block title %}Home{% endblock %}
+    
+    {% block title %}Logado{% endblock %}
     {% block head %}
         {{ super() }}
+        <style>
+            #moment-script-logado{
+                padding-left: 1px;
+            }
+        </style>
     {% endblock %}
-
     {% block navbar %}
         {{ super() }}
     {% endblock %}
 
-
     {% block page_content %}
-        <h1>Olá, {% if user.name %}{{ user.name }} {{ user.lastName }}{% else %}Estranho!{% endif %}!</h1>
-        <h1>Sua instituição de ensino é {{ user.instituicaoDeEnsino }}</h1>
-        <h1>Está cursando a disciplina de {{ user.disciplina }}</h1>
-        <h1>O IP do computador remoto é: {{ remote_addr }}</h1>
-        <h1>O host da aplicação é: {{ host }}</h1>
+       <h3>Dados do acesso</h3>
     {% endblock %}
 
     {% block content %}
         {{ super() }}
         <div class="container">
-            {{ wtf.quick_form(form) }}
-            <br>
+             <h3>Você está acessando o sistema por meio do usuário {{ name }}</h3>
         </div>
     {% endblock %}
 
     {% block scripts %}
         {{ super() }}
-        <div class="container">
+        <div class="container" id="moment-script-logado">
+            <br>
             <p>The local date and time is {{ moment(current_time).format('LLL') }}.</p>
             <p>That was {{ moment(current_time).fromNow(refresh=true) }}</p>
-    </div>
+        </div>
     {% endblock %}
-
-    
 
 </html>

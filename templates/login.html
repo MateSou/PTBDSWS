@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    {% extends "base.html" %}
+    {% import "bootstrap/wtf.html" as wtf %}
+
+    {% block title %}Login{% endblock %}
+    {% block head %}
+        {{ super() }}
+        <style>
+            .panel.panel-default{
+                width: 32%;
+                margin: 0 auto;
+            }
+
+            .panel-body{
+                margin-left: 10px;
+            }
+
+            #user-name-email{
+                padding:10px;
+                width: 80%;
+            }
+
+            #user-passwd{
+                padding:10px;
+                width: 80%;
+            }
+
+            #label-login{
+                margin-left:10px;
+            }
+
+            #submit-button{
+                margin-left:10px;
+            }
+
+
+        </style>
+    {% endblock %}
+
+    {% block navbar %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block content %}
+       <div class="container">
+            <form method="post">
+                {{ form.hidden_tag() }}
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <h2 id="label-login">{{ form.user_name_or_email.label.text }} </h2>
+                        {{ form.user_name_or_email }}
+                        <br>
+                        <br>
+                        {{ form.user_secret }}
+                        <br>
+                        <br>
+                        {{ form.submit }}
+                    </div>         
+                </div>
+            </form>
+       </div>
+    {% endblock %}
+
+</html>
