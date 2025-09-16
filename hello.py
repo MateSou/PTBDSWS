@@ -85,13 +85,16 @@ def login():
         'secret':form.user_secret.data
     }
     if form.validate_on_submit():
-        return(loginResponse(name=user_infos['nameOrEmail']))
-    return render_template('login.html',form=form,user=user_infos,current_time=datetime.utcnow())
+        session['userLogin'] = user_infos.get('nameOrEmail')
+        return redirect(url_for('loginResponse'))
+
+    return render_template('login.html',form=form,current_time=datetime.utcnow())
 
 ##Login Response
 #Funcao que apenas renderiza a pagina do resultado do Login
-def loginResponse(name):
-    return render_template('loginResponse.html',name=name,current_time=datetime.utcnow())
+@app.route('/loginResponse')
+def loginResponse():
+    return render_template('loginResponse.html',name=session.get('userLogin'),current_time=datetime.utcnow())
 
 ##Error 404 - Not Found
 @app.errorhandler(404)
