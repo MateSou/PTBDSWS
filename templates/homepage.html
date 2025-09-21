@@ -14,11 +14,8 @@
 
 
     {% block page_content %}
-        <h1>Olá, {% if user.name %}{{ user.name }} {{ user.lastName }}{% else %}Estranho!{% endif %}!</h1>
-        <h1>Sua instituição de ensino é {{ user.instituicaoDeEnsino }}</h1>
-        <h1>Está cursando a disciplina de {{ user.disciplina }}</h1>
-        <h1>O IP do computador remoto é: {{ remote_addr }}</h1>
-        <h1>O host da aplicação é: {{ host }}</h1>
+        <h1>Olá, {% if name %}{{ name }}{% else %}Estranho!{% endif %}!</h1>
+        {% if known %}<p>Feliz em vê-lo novamente!</p>{% else %}<p>Prazer em conhecê-lo!</p>{% endif %}
     {% endblock %}
 
     {% block content %}
@@ -26,17 +23,25 @@
         <div class="container">
             {{ wtf.quick_form(form) }}
             <br>
+            <h1>Relação de usuários cadastrados</h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome do Usuário</th>
+                        <th>Função</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in users_list %}
+                    <tr>
+                        <td>{{ item.username }}</td>
+                        <td>{{ item.role.name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     {% endblock %}
-
-    {% block scripts %}
-        {{ super() }}
-        <div class="container">
-            <p>The local date and time is {{ moment(current_time).format('LLL') }}.</p>
-            <p>That was {{ moment(current_time).fromNow(refresh=true) }}</p>
-    </div>
-    {% endblock %}
-
     
 
 </html>
