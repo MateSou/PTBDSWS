@@ -24,6 +24,7 @@
             {{ wtf.quick_form(form) }}
             <br>
             <h1>Relação de usuários cadastrados</h1>
+            <h4>Quantidade: {{ users_quantidade }}</h4>
             <table class="table">
                 <thead>
                     <tr>
@@ -40,6 +41,44 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <br>
+            <h1>Relação de funções cadastradas</h1>
+            <h4>Quantidade: {{ roles_quantidade }}</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Funções</th>
+                        <th>Usuários</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Administrator</td>
+                        <td>
+                            {% for item in users_role['administrator'] %}
+                                <p>{{ loop.index }}. {{ item.username }}</p>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Moderator</td>
+                        <td>
+                            {% for item in users_role['moderator'] %}
+                                <p>{{ loop.index }}. {{ item.username }}</p>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>User</td>
+                        <td>
+                            {% for item in users_role['user'] %}
+                                <p>{{ loop.index }}. {{ item.username }}</p>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
         </div>
     {% endblock %}
     
