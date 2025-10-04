@@ -5,6 +5,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
+import requests
 import os 
 
 
@@ -21,7 +22,12 @@ bootstrap = Bootstrap(app)
 
 app.config['SECRET_KEY'] = 'senhasecreta'
 
-migrate = Migrate(app, db)
+app.config['API_KEY'] = os.environ.get('API_KEY')
+app.config['API_URL'] = os.environ.get('API_URL')
+app.config['API_FROM'] = os.environ.get('API_FROM')
+app.config['FLASK_MAIL_SUBJECT_PREFIX'] = '[Flask]'
+app.config['FLASK_ADMIN'] = os.environ.get('FLASK_ADMIN')
+
 
 ##Banco de Dados
 class Role(db.Model):
@@ -39,48 +45,44 @@ class User(db.Model):
 
 ## Formularios
 class Form(FlaskForm):
-    choices = [('Moderator', 'Moderator'), ('User', 'User'), ('Administrator', 'Administrator')]
     name = StringField('Qual é o seu nome?', validators=[DataRequired()])
-    role = SelectField('Role', choices=choices)
     submit = SubmitField('Enviar')
+
+def send_email(to,subject,newUser): 
+        email_from = app.config['API_FROM']
+        email_text = "Novo usuário cadastrado.\n" + "Nome: " + str(newUser) + "\n" + "\nAluno: " + str(os.getenv('NOME')) + "\nPRONTUARIO: " + str(os.getenv('PRONTUARIO'))
+        return requests.post(
+            app.config['API_URL'],
+            auth=("api", app.config['API_KEY']),
+            data={"from": email_from,
+                  "to":to,
+                "subject":app.config['FLASK_MAIL_SUBJECT_PREFIX'] + ' - '+ subject,
+                "text":email_text})
+    
 
 ##Home Page
 @app.route('/', methods=['POST', 'GET'])
 def index():
     form = Form()
     if form.validate_on_submit():
+        #Salvando os dados enviado na sessão
         session['Name'] = form.name.data
-        session['Role'] = form.role.data
         user = User.query.filter_by(username=form.name.data).first()
         if user is None:
-           #role pode ser um objeto do tipo Role, que é o role (papel) selecionado pelo user
-           role = Role.query.filter_by(name=form.role.data).first()
-           user = User(username=form.name.data,role=role)
+           user = User(username=form.name.data,role_id=3)
            db.session.add(user)
            db.session.commit()
-           #Salvando os dados enviado na sessão
            session['known'] = False
+           if app.config['FLASK_ADMIN']:
+               send_email([app.config['FLASK_ADMIN'],"flaskaulasweb@zohomail.com"], 
+                          'Novo Usuário', 
+                          form.name.data)
         else:
             session['known'] = True
         return redirect(url_for('index'))
     
-    #Lista de todos os usuários cadastrados
-    users_list=User.query.all()
-    #quantidade de usuários cadastrados
-    quantidade_users_cadastrados = len(users_list)
-    #quantidade de funções cadastradas
-    quantidade_roles_cadastradas = len(Role.query.all())
-    #Dicionário de listas de usuários com determinado papel
-    users_role = {
-        'administrator': User.query.filter_by(role_id=1).all(),
-        'moderator': User.query.filter_by(role_id=2).all(),
-        'user': User.query.filter_by(role_id=3).all()
-    }
     return render_template('homepage.html', form=form, name=session.get('Name'), 
-                           known=session.get('known'),users_quantidade=quantidade_users_cadastrados,
-                           users_list=users_list,roles_quantidade=quantidade_roles_cadastradas,
-                           users_role=users_role)
-
+                           known=session.get('known', False))
 
 ##Error 404 - Not Found
 @app.errorhandler(404)
