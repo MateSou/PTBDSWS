@@ -16,12 +16,31 @@
     {% block page_content %}
         <h1>Olá, {% if name %}{{ name }}{% else %}Estranho!{% endif %}!</h1>
         {% if known %}<p>Feliz em vê-lo novamente!</p>{% else %}<p>Prazer em conhecê-lo!</p>{% endif %}
+        <P>E-mail enviado para o <strong>Administrador do sistema</strong>, notificando o cadastro de um novo usuário.</P>
     {% endblock %}
 
     {% block content %}
         {{ super() }}
         <div class="container">
             {{ wtf.quick_form(form) }}
+            <br>
+            <h1>Relação de Usuários cadastrados</h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome do Usuário</th>
+                        <th>Função</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in users %}
+                    <tr>
+                        <td>{{ item.username }}</td>
+                        <td>{{ item.role.name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     {% endblock %}
     
