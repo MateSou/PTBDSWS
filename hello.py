@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for, session, redirect
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField
+from wtforms import StringField, SubmitField, BooleanField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 import requests
@@ -22,11 +22,12 @@ bootstrap = Bootstrap(app)
 
 app.config['SECRET_KEY'] = 'senhasecreta'
 
-app.config['API_KEY'] = os.environ.get('API_KEY')
-app.config['API_URL'] = os.environ.get('API_URL')
-app.config['API_FROM'] = os.environ.get('API_FROM')
+app.config['API_KEY'] = os.getenv('API_KEY')
+app.config['API_URL'] = os.getenv('API_URL')
+app.config['API_FROM'] = os.getenv('API_FROM')
 app.config['FLASK_MAIL_SUBJECT_PREFIX'] = '[Flask]'
-app.config['FLASK_ADMIN'] = os.environ.get('FLASK_ADMIN')
+app.config['FLASK_ADMIN'] = os.getenv('FLASK_ADMIN')
+app.config['EMAIL_PROF'] = os.getenv('EMAIL_PROF')
 
 
 ##Banco de Dados
@@ -46,8 +47,10 @@ class User(db.Model):
 ## Formularios
 class Form(FlaskForm):
     name = StringField('Qual é o seu nome?', validators=[DataRequired()])
+    send_email = BooleanField("Deseja enviar e-mail para flaskaulasweb@zohomail.com?", "")
     submit = SubmitField('Enviar')
 
+## E-mail
 def send_email(to,subject,newUser): 
         email_from = app.config['API_FROM']
         email_text = "Novo usuário cadastrado.\n" + "Nome: " + str(newUser) + "\n" + "\nAluno: " + str(os.getenv('NOME')) + "\nPRONTUARIO: " + str(os.getenv('PRONTUARIO'))
@@ -73,16 +76,16 @@ def index():
            db.session.add(user)
            db.session.commit()
            session['known'] = False
-           if app.config['FLASK_ADMIN']:
-               send_email([app.config['FLASK_ADMIN'],"flaskaulasweb@zohomail.com"], 
-                          'Novo Usuário', 
-                          form.name.data)
+           if form.send_email.data:
+               if app.config['FLASK_ADMIN']:
+                send_email([app.config['FLASK_ADMIN'],app.config['EMAIL_PROF']],'Novo Usuário',
+                           form.name.data) 
         else:
             session['known'] = True
         return redirect(url_for('index'))
     
     return render_template('homepage.html', form=form, name=session.get('Name'), 
-                           known=session.get('known', False))
+                           known=session.get('known', False),users = User.query.all())
 
 ##Error 404 - Not Found
 @app.errorhandler(404)
