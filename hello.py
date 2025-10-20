@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 import requests
 import os 
+import datetime
 
 
 app = Flask(__name__)
@@ -17,6 +18,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] =\
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+
+migrate = Migrate(app,db)
 
 bootstrap = Bootstrap(app)
 
@@ -43,6 +46,16 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    email = db.relationship('Email', backref='user', uselist=False)
+
+class Email(db.Model):
+    __tablename__ = 'emails'
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    destination = db.Column(db.String(64))
+    subject = db.Column(db.String(64))
+    text = db.Column(db.Text())
+    date = db.Column(db.DateTime(timezone=True))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True)
 
 ## Formularios
 class Form(FlaskForm):
@@ -78,14 +91,26 @@ def index():
            session['known'] = False
            if form.send_email.data:
                if app.config['FLASK_ADMIN']:
-                send_email([app.config['FLASK_ADMIN'],app.config['EMAIL_PROF']],'Novo Usuário',
-                           form.name.data) 
+                   send_email([app.config['FLASK_ADMIN'],app.config['EMAIL_PROF']],'Novo Usuário',
+                              form.name.data)
+               email_destination = str(app.config['FLASK_ADMIN'] + ', ' + app.config['EMAIL_PROF'])
+               email_subject = app.config['FLASK_MAIL_SUBJECT_PREFIX'] + ' - '+ 'Novo Usuário'
+               email_body = "Novo usuário cadastrado.\n" + "Nome: " + str(form.name.data) + "\n" + "\nAluno: " + str(os.getenv('NOME')) + "\nPRONTUARIO: " + str(os.getenv('PRONTUARIO'))
+               email_date = datetime.datetime.now().replace(microsecond=0)
+               email = Email(destination=email_destination,subject=email_subject,text=email_body,date=email_date,user_id = user.id)
+               db.session.add(email)
+               db.session.commit()                              
         else:
             session['known'] = True
         return redirect(url_for('index'))
     
     return render_template('homepage.html', form=form, name=session.get('Name'), 
-                           known=session.get('known', False),users = User.query.all())
+                           known=session.get('known', False),users = User.query.all(), emails = Email.query.all())
+
+@app.route('/emailsEnviados')
+def emailsEnviados():
+    return render_template('emails.html', emails=Email.query.all())
+
 
 ##Error 404 - Not Found
 @app.errorhandler(404)
