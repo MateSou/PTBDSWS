@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    {% extends "base.html" %}
+    
+    {% block title %}Logado{% endblock %}
+    {% block head %}
+        {{ super() }}
+        <style>
+            #moment-script-logado{
+                padding-left: 1px;
+            }
+        </style>
+    {% endblock %}
+    {% block navbar %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block page_content %}
+       <h3>Dados do acesso</h3>
+    {% endblock %}
+
+    {% block content %}
+        {{ super() }}
+        <div class="container">
+             <h3>Você está acessando o sistema por meio do usuário {{ name }}</h3>
+        </div>
+    {% endblock %}
+
+    {% block scripts %}
+        {{ super() }}
+        <div class="container" id="moment-script-logado">
+            <br>
+            <p>The local date and time is {{ moment(current_time).format('LLL') }}.</p>
+            <p>That was {{ moment(current_time).fromNow(refresh=true) }}</p>
+        </div>
+    {% endblock %}
+
+</html>

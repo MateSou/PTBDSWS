@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Emails{% endblock %}
+{%block head %}
+    {{ super() }}
+{%endblock %}
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block page_content %}
+    <h2>E-mails enviados</h2>
+    <p>Relação de e-mails enviados para o administrador do sistema, notificando o cadastro de novos usuários.</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>De</th>
+                <th>Para</th>
+                <th>Assunto</th>
+                <th>Texto</th>
+                <th>Data/Hora</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in emails %}
+                <tr>
+                    <td>{{ item.user.username }}</td>
+                    <td>{{ item.destination }}</td>
+                    <td>{{ item.subject }}</td>
+                    <td>{{ item.text }}</td>
+                    <td>{{ item.date.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

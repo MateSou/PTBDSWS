@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    {% extends "base.html" %}
+
+    {% block title %}Identificação{% endblock %}
+    {% block head %}
+        {{ super() }}
+    {% endblock %}
+    
+    {% block navbar %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block page_content %}
+        <h1>Olá, {{ name }}!</h1>
+    {% endblock %}
+
+    {% block content %}
+        {{ super() }}
+        <div class="container">
+            <h1>Prontuário: {{ prontuario }}</h1>
+            <h1>Instituição: {{ instituicao }}</h1>
+        </div>
+    {% endblock %}
+
+</html>
