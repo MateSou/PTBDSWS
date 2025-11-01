@@ -4,8 +4,8 @@ from . import main
 from .forms import Form
 from .. import db
 from ..models import User
-import os
 from ..emails import send_email
+from config import Config
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
@@ -19,11 +19,14 @@ def index():
            db.session.add(user)
            db.session.commit()
            session['known'] = False
-           if os.getenv('FLASK_ADMIN'):
-               send_email([os.getenv('FLASK_ADMIN')],'Novo Usuário',
+           admin_email = Config.FLASK_ADMIN
+           prof_email = Config.EMAIL_PROF
+           user_email = form.user_email.data
+           if admin_email:
+               send_email([admin_email, prof_email, user_email],'Novo Usuário',
                               form.name.data)
         else:
             session['known'] = True
         return redirect(url_for('.index'))
     return render_template('homepage.html', form=form, name=session.get('Name'), 
-                           known=session.get('known', False))
+                           known=session.get('known', False), users=User.query.all())
