@@ -28,4 +28,4 @@ def index():
         else:
             session['known'] = True
         return redirect(url_for('.index'))
-    return render_template('homepage.html')
+    return render_template('homepage.html', users=User.query.all())
