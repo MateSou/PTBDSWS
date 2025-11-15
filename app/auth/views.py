@@ -2,7 +2,7 @@ from flask import render_template, redirect, request, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from . import auth
 from ..models import User
-from .forms import LoginForm, RegistrationForm, ChangePassowordForm, ChangeEmailForm,ResetPassword
+from .forms import LoginForm, ResetPassword, RegistrationForm, ChangePassowordForm, ChangeEmailForm,RequestToResetPassword
 from app import db
 from ..emails import send_email
 
@@ -67,6 +67,9 @@ def updateEmail():
         if user.verify_password(form.passoword.data) is False:
             flash('Senha Errada')
             return redirect(url_for('.updateEmail'))
+        if User.query.filter_by(email=form.new_email.data).first():
+            flash('Este e-mail já foi cadastrado')
+            return redirect(url_for('.updateEmail'))
         user.email = form.new_email.data
         user.confirmed = False
         db.session.commit()
@@ -88,3 +91,34 @@ def confirmEmail(token):
     else:
         flash('Link inválido ou expirado')
     return redirect(url_for('main.index'))
+
+@auth.route('/reset-password', methods=['GET', 'POST'])
+def resetPassword():
+    if not current_user.is_anonymous:
+        return redirect(url_for('main.index'))
+    form = RequestToResetPassword()
+    if form.validate_on_submit():  
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None:
+            flash('Este e-mail não existe')
+            return redirect(url_for('.resetPassword'))
+        flash('Enviamos um e-mail com instruções para redefinir sua senha')
+        token = user.generate_reset_token()
+        send_email(user.email, 'REDEFINA SUA SENHA', render_template('auth/email/reset_password.html',user=user, token=token))
+        return redirect(url_for('.login'))
+    return render_template('auth/changePassword.html', form=form)
+
+@auth.route('/confirm/password/<token>', methods=['GET', 'POST'])
+def confirmPassword(token):
+    if not current_user.is_anonymous:
+        return redirect(url_for('main.index'))
+    form = ResetPassword()
+    if form.validate_on_submit():
+        if User.reset_password(token,form.new_password.data) is False:
+            flash('Algo deu errado :( . Sentimos muito!')
+            return redirect(url_for('main.index'))
+        db.session.commit()
+        flash('Senha resetada. Agora você pode fazer login')
+        return redirect(url_for(('.login')))
+    return render_template('auth/changePassword.html', form=form)
+    
