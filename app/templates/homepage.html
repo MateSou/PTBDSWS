@@ -23,6 +23,28 @@
     {% endblock %}
     {% block content %}
         {{ super() }}
+        {% if current_user.is_authenticated %}
+            <div class="container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nome do Usuário</th>
+                            <th>E-mail</th>
+                            <th>Confirmado?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in users %}
+                        <tr>
+                            <td>{{ item.username }}</td>
+                            <td>{{ item.email }}</td>
+                            <td>{{ item.confirmed }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
     {% endblock %}
     
 
