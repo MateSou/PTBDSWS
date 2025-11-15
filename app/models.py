@@ -54,6 +54,7 @@ class User(UserMixin, db.Model):
         s = Serializer(current_app.config['SECRET_KEY'])
         return s.dumps({'confirm': self.id})
     
+    
     def confirm(self,token, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
@@ -66,3 +67,19 @@ class User(UserMixin, db.Model):
         self.confirmed = True
         db.session.add(self)
         return True
+
+    def confirm_reset_password(self,token,expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token, max_age=expiration)
+        except:
+            return False
+        
+        user = User.query.get(data.get('confirm'))
+        if user is None:
+            return False
+        return user
+    
+    def generate_reset_token(self):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'reset': self.id})

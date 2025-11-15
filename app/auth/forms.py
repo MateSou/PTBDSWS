@@ -41,6 +41,11 @@ class ChangeEmailForm(FlaskForm):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Este e-mail já está registrado')
         
-class ResetPassword(FlaskForm):
+class RequestToResetPassword(FlaskForm):
     email = EmailField('Email', validators=[DataRequired(), Length(1,64), Email()])
     submit = SubmitField('Resetar Senha')
+
+class ResetPassword(FlaskForm):
+    new_password = PasswordField('Nova senha', validators=[DataRequired(), Length(1,64), EqualTo('confirm_password', message='As senhas devem ser iguais')])
+    confirm_password = PasswordField('Confirme a senha', validators=[DataRequired()])
+    submit = SubmitField('Trocar a senha')
